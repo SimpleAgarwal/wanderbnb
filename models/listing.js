@@ -27,6 +27,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review=require("./review.js");
+const { string } = require("joi");
 
 const listingSchema = new Schema({
     title : {
@@ -35,14 +36,11 @@ const listingSchema = new Schema({
     },
     description : String,
     image : {
-        filename : String,
-        url : {
-            type : String,
-            default : "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60",
-            set : (v) => v === "" ? "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60" : v
-        }
+        url: String,
+        filename: String,
 
     },
+
     price : Number,
     location : String,
     country : String,
@@ -52,6 +50,22 @@ const listingSchema = new Schema({
             ref:"Review",
         },
     ],
+
+    owner: {
+        type:Schema.Types.ObjectId,
+        ref:"User",
+    },
+    geometry:{
+        type: {
+        type: String, // Don't do `{ location: { type: String } }`
+        enum: ['Point'], // 'location.type' must be 'Point'
+        required: true
+    },
+        coordinates: {
+        type: [Number],
+        required: true,
+    },
+  },
 });
 
 listingSchema.post("findOneAndDelete", async (listing) => {
